@@ -1,12 +1,10 @@
-const { defineConfig } = require('@vue/cli-service')
-module.exports = defineConfig({
-  transpileDependencies: true,
+module.exports = {
   publicPath: './',
   devServer: {
     open: true,
     host: 'localhost',
-    https: false,
     port: 8080,
+    https: false,
     proxy: {
       [process.env.VUE_APP_BASE_API]: {
         target: process.env.VUE_APP_CROSS_ORIGIN,
@@ -17,4 +15,4 @@ module.exports = defineConfig({
       }
     }
   }
-})
+}
