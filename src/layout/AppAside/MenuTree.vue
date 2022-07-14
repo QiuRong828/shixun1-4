@@ -1,31 +1,39 @@
 <template>
-  <el-submenu
-    :index="data.path"
-    v-if="data.children.length != 0 && data.component === null"
-  >
-    <template slot="title">
-      <i :class="'el-icon-' + data.icon"></i>
-      <span slot="title">{{ data.label }}</span>
-    </template>
-    <MenuTree
-      v-for="(item, index) in data.children"
-      :key="index"
-      :data="item"
-    ></MenuTree>
-  </el-submenu>
-  <el-menu-item-group v-else>
-    <el-menu-item :index="data.path">
-      <i :class="'el-icon-' + data.icon"></i>
-      <span slot="title"> {{ data.label }}</span>
+  <div>
+    <el-menu-item
+      v-if="!item.children || (item.children && item.children.length <= 0)"
+      :index="item.path === '/' ? '/index' : item.path"
+    >
+      <i :class="'el-icon-' + item.icon"></i>
+      <span slot="title">{{ item.title }}</span>
     </el-menu-item>
-  </el-menu-item-group>
+    <el-submenu
+      v-if="item.children && item.children.length > 0"
+      :index="item.path"
+    >
+      <template slot="title">
+        <i :class="'el-icon-' + item.icon"></i>
+        <span>{{ item.title }}</span>
+      </template>
+      <MenuTree
+        v-for="(childItem, index) in item.children"
+        :key="index"
+        :item="childItem"
+      ></MenuTree>
+    </el-submenu>
+  </div>
 </template>
 
 <script>
 export default {
   name: 'MenuTree',
-  props: ['data']
+  props: {
+    item: {
+      type: Object,
+      default: () => {}
+    }
+  }
 }
 </script>
 
-<style lang="scss" scoped></style>
+<style scoped></style>

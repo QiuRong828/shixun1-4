@@ -1,15 +1,35 @@
-const generateMenu = (menu) => {
-  for (let i = 0; i < menu.length; i++) {
-    if (menu[i].children && menu[i].children.length <= 0) {
-      delete menu[i].children
+export const filterMenus = (menus) => {
+  const newMenus = []
+
+  menus.forEach((item) => {
+    if (item.children && item.children.length <= 0) {
+      return newMenus.push({
+        title: item.label,
+        path: item.path,
+        icon: item.icon
+      })
     }
-    if (menu[i].children && menu[i].children.length > 0) {
-      generateMenu(menu[i].children)
+
+    if (item.children && item.children.length > 0) {
+      /* eslint-disable */
+      const data = item.children.filter((child, index) => {
+        if (child.children && child.children.length > 0) {
+          if (!child.children[index].name) {
+            delete child.children[index].children
+          }
+          return child
+        }
+      })
+
+      const children = filterMenus(data)
+      newMenus.push({
+        title: item.label,
+        path: item.path,
+        icon: item.icon,
+        children: children
+      })
     }
-  }
-  return menu
-}
-export const filterMenuData = (menu) => {
-  const menuList = generateMenu(menu)
-  return menuList
+  })
+
+  return newMenus
 }

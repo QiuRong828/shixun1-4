@@ -1,6 +1,6 @@
 <template>
   <el-container>
-    <el-aside width="200px">
+    <el-aside width="auto">
       <AppAside></AppAside>
     </el-aside>
     <el-container>
@@ -34,7 +34,7 @@ export default {
 .el-header {
   background-color: #18bc9c;
   color: #333;
-  line-height: 60px;
+  // line-height: 60px;
 }
 
 .el-aside {

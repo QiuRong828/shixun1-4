@@ -1,10 +1,18 @@
 <template>
   <div class="header">
     <div class="l">
-      <div
-        :class="flag ? 'el-icon-s-unfold ' : 'el-icon-s-fold'"
-        @click="fold"
-      ></div>
+      <el-button
+        @click="handleCollapseMenu"
+        size="mini"
+        type="text"
+        :icon="
+          $store.getters.isCollapse ? 'el-icon-s-fold' : 'el-icon-s-unfold'
+        "
+      ></el-button>
+
+      <div>
+        <AppTags></AppTags>
+      </div>
     </div>
     <div class="r">
       <el-tooltip class="item" effect="dark" content="全屏" placement="bottom">
@@ -18,10 +26,17 @@
       >
         <i class="el-icon-error"></i>
       </el-tooltip>
-      <div class="t"></div>
+      <el-avatar
+        class="avatar-H avatar-img hand"
+        v-if="$store.getters.userInfo"
+        :src="
+          $store.getters.userInfo.avatar ? $store.getters.userInfo.avatar : ''
+        "
+      ></el-avatar>
       <el-dropdown @command="handleCommand">
         <span class="el-dropdown-link">
-          duck<i class="el-icon-arrow-down el-icon--right"></i>
+          {{ $store.getters.userInfo.username || ''
+          }}<i class="el-icon-arrow-down el-icon--right"></i>
         </span>
         <el-dropdown-menu slot="dropdown">
           <el-dropdown-item command="a">个人设置</el-dropdown-item>
@@ -33,44 +48,44 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import AppTags from '../../components/Tags.vue'
 export default {
-  props: ['flag'],
+  components: { AppTags },
   data() {
     return {
-      icon: false,
-      isCollapse: true,
       fullscreen: false
     }
   },
-  mounted() {
-    this.getlist()
-  },
+
   methods: {
-    ...mapActions(['user/tc', 'login/logout']),
-    async getlist() {
-      await this['user/tc']()
+    handleCollapseMenu() {
+      this.$store.dispatch('menu/setCollapse')
     },
     handleCommand(command) {
       if (command === 'error') {
         this.exitLogin()
+      } else if (command === 'a') {
+        this.handleSettings()
       }
+    },
+    handleSettings() {
+      alert('个人设置')
     },
     // 退出登录
     exitLogin() {
-      // alert('退出')
       this.$confirm('您确定要退出系统吗？', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       })
         .then(() => {
-          this['user/logout']()
+          this.$store.dispatch('user/logout')
           this.$notify({
             title: '提示',
-            message: '正在退出...',
+            message: '退出成功',
             type: 'success'
           })
+          this.$router.push('/login')
         })
         .catch(() => {
           this.$message({
@@ -79,10 +94,7 @@ export default {
           })
         })
     },
-    // 侧边栏收缩
-    fold() {
-      this.$emit('fold')
-    },
+
     // 全屏
     screen() {
       const element = document.documentElement
@@ -116,14 +128,18 @@ export default {
 <style scoped lang="scss">
 .header {
   display: flex;
+  justify-content: space-between;
+  height: 100%;
 }
 .l {
-  flex: 1;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  // flex: 1;
   // background-color: aqua;
-  float: left;
-  .el-icon-s-fold,
-  .el-icon-s-unfold {
-    font-size: 23px;
+
+  .el-button {
+    font-size: 25px;
     color: #fff;
   }
 }
@@ -139,26 +155,22 @@ export default {
     font-size: 23px;
     color: #fff;
   }
+  .avatar-img {
+    margin-top: 5px;
+  }
   .el-icon-rank {
     transform: rotate(20deg);
     -webkit-transform: rotate(20deg);
   }
   .el-dropdown-link {
+    margin-top: 10px;
     cursor: pointer;
     font-size: 18px;
     color: white;
     font-weight: bold;
   }
 }
-.t {
-  width: 35px;
-  height: 35px;
-  border-radius: 50%;
-  background-color: #c0c4cc;
-  line-height: 60px;
-  float: left;
-  margin-top: 10px;
-}
+
 .el-dropdown {
   float: right;
 }

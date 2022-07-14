@@ -1,28 +1,28 @@
-import router from './router'
-import store from './store'
-const whiteList = ['/login']
+import router from '@/router'
+import store from '@/store'
+
+import { Message } from 'element-ui'
+
+const whiteList = ['/login', '/404']
+
 router.beforeEach(async (to, from, next) => {
   const token = store.getters.token
   if (token) {
     if (to.path === '/login') {
+      Message('请勿重复登录')
       next(from.path)
     } else {
-      if (!store.getters.userInfo) {
-        console.log(store.getters.userInfo)
-        const res = await store.dispatch('user/getUserInfos')
-        if (res) {
-          const { authoritys } = await store.dispatch('user/getMenuList')
-          const filterRoutes = await store.dispatch(
-            'permission/filterRoutes',
-            authoritys
-          )
-          filterRoutes.forEach((item) => {
-            router.addRoute(item)
-          })
-          // return next(to.path)
+      if (store.getters.hasUserInfo && store.getters.hasPermission) {
+        next()
+      } else {
+        const userInfo = await store.dispatch('user/getUserInfo')
+        const permission = await store.dispatch('user/getPermission')
+        if (userInfo && permission) {
+          next()
+        } else {
+          next('/login')
         }
       }
-      next()
     }
   } else {
     if (whiteList.includes(to.path)) {

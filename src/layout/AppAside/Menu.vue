@@ -1,49 +1,51 @@
 <template>
-  <div class="box">
+  <div class="aside-container">
     <el-menu
+      :style="{ width: $store.getters.isCollapse ? '60px' : '200px' }"
       class="el-menu-vertical-demo"
-      :default-active="menuPath"
+      :default-active="activePath"
       background-color="#303133"
       text-color="#fff"
       active-text-color="#ffd04b"
       router
-      :collapse="flag"
+      :collapse="isCollapse"
       :collapse-transition="false"
+      unique-opened
     >
       <item-menu
-        v-for="(item, index) in date"
+        v-for="(item, index) in menus"
         :key="index"
-        :data="item"
+        :item="item"
       ></item-menu>
     </el-menu>
   </div>
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { filterMenus } from '../../utils/menu'
 import ItemMenu from './MenuTree.vue'
-import store from '@/store'
 export default {
   components: { ItemMenu },
-  props: ['flag'],
   name: 'index',
   data() {
-    return {
-      date: [],
-      menuPath: ''
+    return {}
+  },
+  computed: {
+    activePath() {
+      return this.$route.path
+    },
+    /* eslint-disable */
+    menus() {
+      if (this.$store.getters.menus) {
+        return filterMenus(this.$store.getters.menus)
+      }
+    },
+    isCollapse() {
+      return this.$store.getters.isCollapse
     }
   },
-  mounted() {
-    this.getMenuList()
-  },
-  methods: {
-    // 获取左侧菜单接口
-    ...mapActions(['user/navMenu']),
-    async getMenuList() {
-      await this['user/navMenu']()
-      this.date = store.state.user.menus
-      console.log(store.state.user)
-    }
+  created() {
+    console.log('create', this.menus)
   }
 }
 </script>
@@ -51,5 +53,8 @@ export default {
 <style scoped>
 .el-menu {
   border-right: none;
+}
+.aside-container {
+  width: auto;
 }
 </style>

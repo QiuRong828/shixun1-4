@@ -1,26 +1,27 @@
 import UserApi from '../../api/user'
-import { setItem, getItem, removeAllItem } from '../../utils/storage'
-import router from '@/router'
+import { setItem, getItem, removeItem } from '../../utils/storage'
 
 export default {
   namespaced: true,
   state: {
     token: getItem('token') || '',
     menus: [],
-    avatar: '',
-    nameinfo: ''
+    userInfo: '',
+    permission: ''
   },
   mutations: {
     setToken(state, token) {
       state.token = token
       setItem('token', token)
     },
-    userinfo(state, data) {
-      state.avatar = data.avatar
-      state.nameinfo = data.username
+    setUserInfo(state, userInfo) {
+      state.userInfo = userInfo
     },
-    menu(state, data) {
-      state.menus = data.menus
+    setPermission(state, permission) {
+      state.permission = permission
+    },
+    setMenus(state, menus) {
+      state.menus = menus
     }
   },
   actions: {
@@ -29,25 +30,29 @@ export default {
       commit('setToken', token)
       return token
     },
-    async navMenu({ commit }) {
-      try {
-        const data = await UserApi.getMenuNav()
-        commit('menu', data)
-      } catch (error) {
-        console.log(error)
+    async getUserInfo({ commit }) {
+      const userInfo = await UserApi.getUserInfo()
+      commit('setUserInfo', userInfo)
+      return userInfo
+    },
+    async getPermission({ commit }) {
+      const { authoritys, menus } = await UserApi.getMenuNav()
+      if (authoritys.length > 0 && menus.length > 0) {
+        commit('setPermission', authoritys)
+        commit('setMenus', menus)
+        return { authoritys, menus }
+      } else {
+        return false
       }
     },
-    async tc({ commit }) {
-      try {
-        const data = await UserApi.logout()
-        commit('userinfo', data)
-      } catch (error) {
-        console.log(error)
-      }
-    },
-    logout() {
-      removeAllItem()
-      router.push('/login')
+    async logout({ commit }) {
+      await UserApi.logout()
+      commit('setToken', '')
+      commit('setUserInfo', '')
+      commit('setPermission', '')
+      commit('setMenus', '')
+      removeItem('token')
+      return true
     }
   }
 }

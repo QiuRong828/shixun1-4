@@ -1,5 +1,6 @@
 import axios from 'axios'
 import { Message } from 'element-ui'
+import store from '@/store'
 import exceptionMessage from './exception-message'
 
 const service = axios.create({
@@ -10,8 +11,10 @@ const service = axios.create({
 // 请求拦截器
 service.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('token')
-    if (token) config.headers.token = `${token}`
+    const token = store.getters.token
+    if (token) {
+      config.headers.token = token
+    }
     return config
   },
   (error) => {
