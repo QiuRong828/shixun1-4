@@ -22,6 +22,7 @@
         class="item"
         effect="dark"
         content="关闭全部标签"
+        @click="handleRemoveAllTags"
         placement="bottom"
       >
         <i class="el-icon-error"></i>
@@ -58,6 +59,10 @@ export default {
   },
 
   methods: {
+    handleRemoveAllTags() {
+      this.$store.dispatch('tags/removeAllTag')
+      this.$router.push('/index')
+    },
     handleCollapseMenu() {
       this.$store.dispatch('menu/setCollapse')
     },

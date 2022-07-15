@@ -1,11 +1,24 @@
 <template>
-  <div>
-    <router-view></router-view>
+  <div class="main-container">
+    <el-card class="box-card">
+      <div slot="header" class="clearfix">
+        <AppBreadCrumb></AppBreadCrumb>
+      </div>
+      <div class="text item">
+        <router-view></router-view>
+      </div>
+    </el-card>
   </div>
 </template>
 
 <script>
-export default {}
+import AppBreadCrumb from '../../components/BreadCrumb.vue'
+export default {
+  name: 'index',
+  components: {
+    AppBreadCrumb
+  }
+}
 </script>
 
-<style lang="scss" scoped></style>
+<style scoped></style>

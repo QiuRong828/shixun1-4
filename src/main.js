@@ -5,6 +5,7 @@ import store from './store'
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
 import './permission'
+import './directive/permission'
 import Fragment from 'vue-fragment'
 Vue.use(Fragment.Plugin)
 

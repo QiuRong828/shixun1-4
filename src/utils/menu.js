@@ -14,8 +14,8 @@ export const filterMenus = (menus) => {
       /* eslint-disable */
       const data = item.children.filter((child, index) => {
         if (child.children && child.children.length > 0) {
-          if (!child.children[index].name) {
-            delete child.children[index].children
+          if (!child.children[0].name) {
+            delete child.children[0].children
           }
           return child
         }
